@@ -86,16 +86,16 @@ SQL seed files can be found inside the project as development continues.
 ## 📌 Installation & Setup
 
 ### 1. Clone the Repository
-```bash
 git clone https://github.com/Vatsal264/FrostGear.git
 
 2. Move Project Into XAMPP
+Place the folder inside the htdocs directory:
 C:/xampp/htdocs/
 
-3. Start Apache & MySQL (via XAMPP)
+4. Start Apache & MySQL (via XAMPP)
 Open XAMPP Control Panel → Start Apache and MySQL.
 
-4. Create Database
+5. Create Database
 Create a new MySQL database named:
 frostgear_db
 Import the SQL tables and seed data provided in the project.
