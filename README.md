@@ -98,6 +98,7 @@ Open XAMPP Control Panel → Start Apache and MySQL.
 ### 4. Create Database
 Create a new MySQL database named:
 frostgear_db
+
 Import the SQL tables and seed data provided in the project.
 
 ### 5. Run the Project in Browser
