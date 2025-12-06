@@ -1,287 +1,185 @@
 <?php
 session_start();
-require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . '/includes/db.php';
 
-/**
- * Category map: id => label
- */
-$categories = [
-    0 => "All Products",
-    1 => "Skis",
-    2 => "Boots",
-    3 => "Goggles",
-    4 => "Ski Poles",
-    5 => "Apparel",
-    6 => "Jackets"
-];
+// Fetch latest active products for the homepage carousel
+$products = [];
 
-// ---- Read filters from URL ----
-$selectedCategory = isset($_GET['category']) ? (int) $_GET['category'] : 0;
-$sort             = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
-$page             = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-if ($page < 1) $page = 1;
-
-// On sale filter
-$onSale = isset($_GET['on_sale']) && $_GET['on_sale'] === '1';
-
-// Sorting options (whitelisted)
-$sortOptions = [
-    'newest'     => 'Newest',
-    'price_asc'  => 'Price (Low to High)',
-    'price_desc' => 'Price (High to Low)',
-    'name_asc'   => 'Name (A–Z)',
-    'name_desc'  => 'Name (Z–A)',
-];
-
-if (!array_key_exists($sort, $sortOptions)) {
-    $sort = 'newest';
-}
-
-$orderBySql = [
-    'newest'     => 'created_at DESC',
-    'price_asc'  => 'price ASC',
-    'price_desc' => 'price DESC',
-    'name_asc'   => 'name ASC',
-    'name_desc'  => 'name DESC',
-][$sort];
-
-// Pagination settings
-$perPage = 9;
-
-// ---- Build dynamic WHERE clause & params (category + on_sale only) ----
-$conditions = ['is_active = 1'];
-$types = '';
-$params = [];
-
-// Category
-if ($selectedCategory !== 0 && isset($categories[$selectedCategory])) {
-    $conditions[] = 'category_id = ?';
-    $types .= 'i';
-    $params[] = $selectedCategory;
-}
-
-// On sale
-if ($onSale) {
-    $conditions[] = 'is_on_sale = 1';
-}
-
-$whereSql = implode(' AND ', $conditions);
-
-// ---- COUNT query (for pagination) ----
-$countSql = "SELECT COUNT(*) AS total FROM products WHERE $whereSql";
-$stmtCount = $conn->prepare($countSql);
-if ($types !== '') {
-    $stmtCount->bind_param($types, ...$params);
-}
-$stmtCount->execute();
-$countResult = $stmtCount->get_result();
-$rowCount    = $countResult->fetch_assoc();
-$totalItems  = (int) ($rowCount['total'] ?? 0);
-$stmtCount->close();
-
-$totalPages = max(1, (int) ceil($totalItems / $perPage));
-if ($page > $totalPages) $page = $totalPages;
-$offset = ($page - 1) * $perPage;
-
-// ---- PRODUCT LIST query ----
-$listSql = "
-    SELECT id, name, description, price, old_price, stock, main_image, is_on_sale
+$sql = "
+    SELECT id, name, main_image, price
     FROM products
-    WHERE $whereSql
-    ORDER BY $orderBySql
-    LIMIT ? OFFSET ?
+    WHERE id IN (1, 2, 3, 12, 13, 8, 10, 15)
 ";
 
-$listTypes = $types . 'ii';
-$listParams = $params;
-$listParams[] = $perPage;
-$listParams[] = $offset;
 
-$stmt = $conn->prepare($listSql);
-$stmt->bind_param($listTypes, ...$listParams);
-$stmt->execute();
-$result   = $stmt->get_result();
-$products = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+$result = mysqli_query($conn, $sql);
 
-/**
- * Helper: trim description for card
- */
-function fg_trim_description(string $text, int $length = 80): string {
-    $clean = trim(strip_tags($text));
-    if (mb_strlen($clean) <= $length) {
-        return $clean;
+if ($result && mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $products[] = $row;
     }
-    return mb_substr($clean, 0, $length) . '…';
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Shop – FrostGear</title>
+    <title>FrostGear - Conquer the Slopes with Confidence</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet" href="assets/css/style.css">
+
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
           crossorigin="anonymous">
 </head>
 <body>
 
-<?php include __DIR__ . "/includes/header.php"; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 
-<!-- ================= TOP SHOP HEADER ================= -->
-<section class="fg-shop-header">
-    <div class="fg-shop-header__inner">
-        <div>
-            <h1>Shop</h1>
-            <nav class="fg-breadcrumb">
-                <a href="index.php">Home</a>
-                <span>&raquo;</span>
-                <span>Shop</span>
-            </nav>
+<!-- ================= HERO SECTION ================= -->
+<section class="fg-hero">
+    <div class="fg-hero__inner">
+        <h1>Conquer the Slopes</h1>
+        <p>
+            Premium skis, boots, and winter gear engineered for stability, comfort,
+            and performance in real alpine conditions.
+        </p>
+        <a href="shop.php" class="fg-btn fg-btn--gold">Shop Now</a>
+    </div>
+
+    <div class="fg-hero__art"></div>
+</section>
+
+<!-- ================= PRODUCTS SECTION ================= -->
+<section class="all-products">
+    <h2>All Products</h2>
+
+    <div class="carousel-wrapper">
+        <button class="carousel-btn left" id="prevBtn">&#8249;</button>
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <?php if (!empty($products)): ?>
+                    <?php foreach ($products as $product): ?>
+                        <a href="product.php?id=<?php echo $product['id']; ?>" class="product-card">
+                            <div class="img-wrapper">
+                                <img src="assets/images/products/<?php echo $product['main_image']; ?>" alt="">
+                            </div>
+                            <h3><?php echo $product['name']; ?></h3>
+                            <p class="price">Rs.<?php echo number_format($product['price']); ?></p>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
+        <button class="carousel-btn right" id="nextBtn">&#8250;</button>
+    </div>
 
-        <form class="fg-shop-sort" method="get" action="shop.php">
-            <?php if ($selectedCategory !== 0): ?>
-                <input type="hidden" name="category" value="<?php echo $selectedCategory; ?>">
-            <?php endif; ?>
-            <?php if ($onSale): ?>
-                <input type="hidden" name="on_sale" value="1">
-            <?php endif; ?>
-
-            <label for="sort">Sort by:</label>
-            <select name="sort" id="sort" onchange="this.form.submit()">
-                <?php foreach ($sortOptions as $key => $label): ?>
-                    <option value="<?php echo $key; ?>" <?php if ($sort === $key) echo 'selected'; ?>>
-                        <?php echo $label; ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </form>
+    <div class="show-more">
+        <a href="shop.php" class="show-btn">Show more items</a>
     </div>
 </section>
 
-<!-- ================= MAIN SHOP LAYOUT ================= -->
-<main class="fg-shop-main">
-    <!-- Sidebar -->
-    <aside class="fg-shop-sidebar">
-        <h2>Browse By</h2>
+<!-- ================= CTA HERO SECTION ================= -->
+<section class="fg-cta-hero">
+   <div class="fg-cta-hero__bg">
+     <img src="assets/images/Call-to-action.avif" alt="Skiers on dark slope background">
+   </div>
 
-        <nav class="fg-sidebar-section">
-            <?php foreach ($categories as $id => $label): ?>
-                <a href="shop.php?category=<?php echo $id; ?>&sort=<?php echo urlencode($sort); ?><?php echo $onSale ? '&on_sale=1' : ''; ?>"
-                   class="fg-sidebar-link <?php echo ($selectedCategory === $id) ? 'active' : ''; ?>">
-                    <?php echo htmlspecialchars($label); ?>
-                </a>
-            <?php endforeach; ?>
-        </nav>
+   <div class="fg-cta-hero__content">
+     <span class="fg-cta-hero__label">Limited Time Only</span>
+     <h2 class="fg-cta-hero__title">
+       Enjoy 20% Off on a Wide<br>
+       Selection of Ski Gear & Accessories
+     </h2>
+     <a href="shop.php" class="fg-btn fg-btn--gold fg-cta-hero__btn">Shop Now</a>
+   </div>
+</section>
 
-        <!-- On Sale toggle – independent -->
-        <div class="fg-sidebar-section fg-sidebar-onsale">
-            <h3>On Sale</h3>
+<!-- ================= ABOUT US SECTION ================= -->
+<section class="fg-about">
+  <div class="fg-about__inner">
 
-            <form method="get" action="shop.php" class="fg-onsale-form">
-                <input type="hidden" name="category" value="<?php echo $selectedCategory; ?>">
-                <input type="hidden" name="sort" value="<?php echo $sort; ?>">
+    <div class="fg-about__media">
+      <img src="assets/images/about-us.avif" alt="FrostGear team on alpine slope">
+    </div>
 
-                <label class="fg-switch">
-                    <input type="checkbox" name="on_sale" value="1"
-                           onchange="this.form.submit()"
-                           <?php if ($onSale) echo 'checked'; ?>>
-                    <span class="fg-switch__slider"></span>
-                </label>
-            </form>
+    <div class="fg-about__content">
+      <span class="fg-about__eyebrow">Built for the mountain</span>
+
+      <h2 class="fg-about__title">About FrostGear</h2>
+
+      <p class="fg-about__text">
+        FrostGear designs skis, boots, and accessories engineered for precise control and all-day comfort.
+        Every piece is field-tested in alpine conditions and refined with feedback from riders at every level.
+      </p>
+
+      <ul class="fg-about__values">
+        <li><strong>Performance Tuned</strong> — Responsive designs for stability and control.</li>
+        <li><strong>Proven Durable</strong> — Materials tested in sub-zero conditions.</li>
+        <li><strong>Honest Fit</strong> — Comfort without compromising handling.</li>
+      </ul>
+
+      <div class="fg-about__cta">
+        <a href="shop.php" class="fg-btn fg-btn--gold">Explore the Gear</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= EXPLORE OUR EXPERTISE ================= -->
+<section class="fg-expertise">
+  <div class="fg-expertise__inner">
+
+    <header class="fg-expertise__header">
+      <h2>Explore Our Expertise</h2>
+      <p>Every FrostGear product reflects cutting-edge design, real-world testing, and rider-focused innovation.</p>
+    </header>
+
+    <div class="fg-exp-cards">
+      <article class="fg-exp-card">
+        <div class="fg-exp-card__icon fg-fa">
+          <i class="fa-solid fa-pen-ruler"></i>
         </div>
-    </aside>
+        <h3>Precision Engineering</h3>
+        <p>Balanced flex patterns and tuned sidecuts deliver confident edge hold on ice and powder.</p>
+      </article>
 
-    <!-- Products -->
-    <section class="fg-shop-products">
-        <header class="fg-shop-products__header">
-            <h2><?php echo $categories[$selectedCategory] ?? 'All Products'; ?></h2>
-            <span class="fg-shop-products__count">
-                <?php echo $totalItems; ?> items
-            </span>
-        </header>
+      <article class="fg-exp-card">
+        <div class="fg-exp-card__icon fg-fa">
+          <i class="fa-regular fa-snowflake"></i>
+        </div>
+        <h3>All-Weather Testing</h3>
+        <p>Field-tested in sub-zero temps, high winds, and variable snow to ensure reliable performance.</p>
+      </article>
 
-        <?php if (!empty($products)): ?>
-            <div class="fg-product-grid">
-                <?php foreach ($products as $p): ?>
-                    <a href="product.php?id=<?php echo (int) $p['id']; ?>"
-                       class="fg-product-card--grid">
-                        <div class="fg-product-card__img">
-                            <?php if (!empty($p['is_on_sale']) && $p['is_on_sale'] == 1): ?>
-                                <span class="fg-sale-badge-img">SALE</span>
-                            <?php endif; ?>
-                            <img src="assets/images/products/<?php echo htmlspecialchars($p['main_image']); ?>"
-                                 alt="<?php echo htmlspecialchars($p['name']); ?>">
-                        </div>
-                        <div class="fg-product-card__body">
-                            <h3><?php echo htmlspecialchars($p['name']); ?></h3>
-                            <p class="fg-product-card__desc">
-                                <?php echo htmlspecialchars(fg_trim_description($p['description'] ?? '')); ?>
-                            </p>
-                            <div class="fg-product-card__meta">
-                                <?php if (!empty($p['is_on_sale']) && $p['is_on_sale'] == 1): ?>
-                                    <div class="fg-price-wrapper">
-                                        <span class="price-new">
-                                            Rs.<?php echo number_format((float) $p['price']); ?>
-                                        </span>
-                                        <?php if (!empty($p['old_price'])): ?>
-                                            <span class="price-old">
-                                                Rs.<?php echo number_format((float) $p['old_price']); ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php else: ?>
-                                    <span class="price">
-                                        Rs.<?php echo number_format((float) $p['price']); ?>
-                                    </span>
-                                <?php endif; ?>
+      <article class="fg-exp-card">
+        <div class="fg-exp-card__icon fg-fa">
+          <i class="fa-solid fa-person-skiing"></i>
+        </div>
+        <h3>Fit & Comfort Science</h3>
+        <p>Ergonomic boot lasts and breathable liners keep rides comfortable without sacrificing response.</p>
+      </article>
+    </div>
 
-                                <span class="stock">
-                                    In stock: <?php echo (int) $p['stock']; ?>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        <?php else: ?>
-            <p class="fg-no-products">No products found with these filters.</p>
-        <?php endif; ?>
+    <div class="fg-exp-stats">
+      <div>
+        <span class="stat">500+</span>
+        <span class="label">Products Tested</span>
+      </div>
+      <div>
+        <span class="stat">25</span>
+        <span class="label">Years Experience</span>
+      </div>
+      <div>
+        <span class="stat">40+</span>
+        <span class="label">Pro Partnerships</span>
+      </div>
+    </div>
 
-        <!-- Pagination -->
-        <?php if ($totalPages > 1): ?>
-            <div class="fg-pagination">
-                <?php
-                $baseUrl = 'shop.php?sort=' . urlencode($sort)
-                         . '&category=' . (int) $selectedCategory;
-                if ($onSale) {
-                    $baseUrl .= '&on_sale=1';
-                }
-                ?>
+  </div>
+</section>
 
-                <?php if ($page > 1): ?>
-                    <a href="<?php echo $baseUrl . '&page=' . ($page - 1); ?>" class="fg-page-btn">&laquo;</a>
-                <?php endif; ?>
 
-                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <a href="<?php echo $baseUrl . '&page=' . $i; ?>"
-                       class="fg-page-btn <?php echo ($i === $page) ? 'active' : ''; ?>">
-                        <?php echo $i; ?>
-                    </a>
-                <?php endfor; ?>
-
-                <?php if ($page < $totalPages): ?>
-                    <a href="<?php echo $baseUrl . '&page=' . ($page + 1); ?>" class="fg-page-btn">&raquo;</a>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-    </section>
-</main>
-
-<?php include __DIR__ . "/includes/footer.php"; ?>
-
-</body>
-</html>
+<?php include __DIR__ . '/includes/footer.php'; ?>
