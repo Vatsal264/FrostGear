@@ -61,8 +61,6 @@ FrostGear/
 │ └── db.php
 │
 └── README.md
-
-
 *(Structure will expand as features are added.)*
 
 ---
@@ -83,5 +81,26 @@ Each product contains:
 - Active status  
 
 SQL seed files can be found inside the project as development continues.
+
+---
+## 📌 Installation & Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Vatsal264/FrostGear.git
+
+2. Move Project Into XAMPP
+C:/xampp/htdocs/
+
+3. Start Apache & MySQL (via XAMPP)
+Open XAMPP Control Panel → Start Apache and MySQL.
+
+4. Create Database
+Create a new MySQL database named:
+frostgear_db
+Import the SQL tables and seed data provided in the project.
+
+5. Run the Project in Browser
+http://localhost/FrostGear/public/index.php
 
 ---
