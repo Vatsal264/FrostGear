@@ -44,4 +44,44 @@ This project is part of a personal portfolio initiative and demonstrates skills 
 ---
 
 ## 📁 Project Structure
+FrostGear/
+│
+├── public/
+│ ├── index.php
+│ ├── shop.php
+│ ├── product.php
+│ ├── assets/
+│ │ ├── css/
+│ │ │ └── style.css
+│ │ ├── images/
+│ │ └── js/
+│ └── includes/
+│ ├── header.php
+│ ├── footer.php
+│ └── db.php
+│
+└── README.md
 
+
+*(Structure will expand as features are added.)*
+
+---
+
+## 🔗 Database Details (Simplified)
+
+### Tables currently implemented:
+- **products**
+- **categories**
+
+Each product contains:
+- Name  
+- Description  
+- Price  
+- Stock level  
+- Category mapping  
+- Image file reference  
+- Active status  
+
+SQL seed files can be found inside the project as development continues.
+
+---
