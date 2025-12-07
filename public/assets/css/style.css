@@ -34,8 +34,6 @@ body {
   line-height: 1.5;
 }
 
-
-
 /* ========== Utility ========== */
 a {
   color: inherit;
@@ -43,6 +41,16 @@ a {
 
 a:hover {
   color: inherit;
+}
+
+/* Global alert bar */
+.fg-global-alert {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  text-align: center;
+  border-bottom: 1px solid #fca5a5;
 }
 
 /* ========== Header ========== */
@@ -81,6 +89,33 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
+}
+/* Logged-in user display */
+.fg-nav__user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fg-user-name {
+  font-weight: 600;
+  color: var(--deep-navy);
+  font-size: 0.9rem;
+}
+
+/* Logout default state */
+.fg-nav__link.fg-logout {
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    transition: 0.25s ease;
+}
+
+/* Hover effect */
+.fg-nav__link.fg-logout:hover {
+    background: rgba(185, 28, 28, 0.20);   /* soft red background */
+    color: #b91c1c;                        /* red text */
+    transform: translateY(-2px);
 }
 
 /* Logo */
@@ -132,7 +167,6 @@ a:hover {
   font-size: 1.2rem;
   border-radius: 999px;
   padding: 0.25rem 0.7rem;
-  border: 1px solid rgba(255, 255, 255, 0.24);
   background: transparent;
   color: #f4f7fa;
   cursor: pointer;
@@ -1708,8 +1742,9 @@ a:hover {
 }
 
 /* -------------------------------------------------------------------------------------------------------------------------------------- */
-/* =========== CONTACT PAGE ============*/
+/* ============== CONTACT PAGE ================*/
 
+/* ---------- HERO ---------- */
 .fg-contact-hero {
   border-top: 1px solid rgba(0,0,0,0.03);
   margin-top: 0.5rem;
@@ -1734,7 +1769,7 @@ a:hover {
   margin-top: 0.3rem;
 }
 
-/* MAIN SPLIT LAYOUT */
+/* ---------- MAIN SPLIT LAYOUT ---------- */
 .fg-contact-main {
   max-width: 1200px;
   margin: 0 auto 3rem;
@@ -1743,26 +1778,26 @@ a:hover {
 
 .fg-contact-main__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-columns: 1.1fr 1fr;
   gap: 2rem;
   align-items: flex-start;
 }
 
-/* FORM SIDE */
+/* ---------- FORM PANEL ---------- */
 .fg-contact-form h2 {
   font-size: 1.3rem;
   color: var(--deep-navy);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
 .fg-contact-form__intro {
   font-size: 0.9rem;
   color: var(--text-body);
-  margin-bottom: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .fg-form__row {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.85rem;
 }
 
 .fg-form__field label {
@@ -1780,9 +1815,9 @@ a:hover {
   padding: 0.5rem 0.6rem;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
   font-size: 0.9rem;
   outline: none;
-  background: #fff;
 }
 
 .fg-form__field input:focus,
@@ -1798,39 +1833,45 @@ a:hover {
 }
 
 .fg-contact-submit {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
   width: 100%;
   justify-content: center;
 }
 
 .fg-contact-note {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
   font-size: 0.8rem;
   color: var(--frost-grey);
 }
 
-/* QUICK CONTACT INFO */
-.fg-contact-info {
-  margin-top: 1.2rem;
-  font-size: 0.9rem;
-  color: var(--text-body);
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+/* ---------- CONTACT INFO CARD ---------- */
+.fg-contact-info .info-card {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+  margin-top: 1.4rem;
 }
 
-.fg-contact-info div {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.fg-contact-info i {
-  font-size: 0.9rem;
+.fg-contact-info .info-card h3 {
+  font-size: 1.3rem;
   color: var(--deep-navy);
+  margin-bottom: 0.5rem;
 }
 
-/* IMAGE SIDE */
+.fg-contact-info .info-card p {
+  font-size: 0.95rem;
+  color: var(--text-body);
+  margin-bottom: 0.6rem;
+}
+
+.fg-contact-info .info-card a {
+  color: var(--deep-navy);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ---------- VISUAL IMAGE PANEL ---------- */
 .fg-contact-visual__card {
   position: relative;
   border-radius: 18px;
@@ -1847,8 +1888,8 @@ a:hover {
 .fg-contact-visual__overlay {
   position: absolute;
   inset: auto 0 0 0;
-  padding: 1rem 1.1rem;
   background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0));
+  padding: 1rem 1.1rem;
   color: #ffffff;
 }
 
@@ -1861,13 +1902,376 @@ a:hover {
   font-size: 0.9rem;
 }
 
-/* RESPONSIVE */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 900px) {
   .fg-contact-main__inner {
     grid-template-columns: 1fr;
   }
 
   .fg-contact-visual {
-    order: -1; /* image above form on mobile if you want; remove if not */
+    order: -1;
   }
 }
+
+/* -------------------------------------------------------------------------------------------------------------------------------------- */
+
+/* -------------------------------
+   AUTH PAGES (Login / Register)
+--------------------------------*/
+
+/* Auth Page Logo */
+.fg-auth__logo {
+  display: flex;
+  justify-content: center;
+}
+
+.fg-auth__logo img {
+  width: 140px;
+  opacity: 0.95;
+}
+
+.fg-auth {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.fg-auth__card {
+  background: #ffffff;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.04);
+  text-align: center;
+}
+
+.fg-auth__card h2 {
+  font-size: 1.6rem;
+  color: var(--deep-navy);
+}
+
+.fg-auth__subtitle {
+  font-size: 0.95rem;
+  color: var(--text-body);
+  margin-top: 0.4rem;
+  margin-bottom: 1.4rem;
+}
+
+.fg-field {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.fg-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--deep-navy);
+}
+
+.fg-field input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 10px;
+  margin-top: 0.3rem;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.fg-auth-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+
+.fg-auth__switch {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.fg-auth__switch a {
+  color: var(--deep-navy);
+  font-weight: 600;
+}
+
+.fg-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.7rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.fg-success {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.7rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* -------------------------------------------------------------------------------------------------------------------------------------- */
+/* =========== CART PAGE =========== */
+
+.fg-cart-hero {
+  border-top: 1px solid rgba(0,0,0,0.03);
+  margin-top: 0.5rem;
+}
+
+.fg-cart-hero__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.4rem 1rem 1.2rem;
+}
+
+.fg-cart-hero__inner h1 {
+  font-size: 1.7rem;
+  color: var(--deep-navy);
+  margin-top: 0.4rem;
+}
+
+.fg-cart-hero__inner p {
+  max-width: 32rem;
+  font-size: 0.95rem;
+  color: var(--text-body);
+  margin-top: 0.3rem;
+}
+
+.fg-cart-main {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.fg-cart-main__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 0.9fr);
+  gap: 1.8rem;
+  align-items: flex-start;
+}
+
+/* Alerts */
+.fg-cart-alert {
+  grid-column: 1 / -1;
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+/* Empty state */
+.fg-cart-empty {
+  grid-column: 1 / -1;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 18px 36px rgba(0,0,0,0.06);
+}
+
+.fg-cart-empty h2 {
+  font-size: 1.4rem;
+  color: var(--deep-navy);
+  margin-bottom: 0.4rem;
+}
+
+.fg-cart-empty p {
+  font-size: 0.95rem;
+  color: var(--text-body);
+  margin-bottom: 1rem;
+}
+
+/* Items table */
+.fg-cart-items-box {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.4rem 1.2rem;
+  box-shadow: 0 18px 36px rgba(0,0,0,0.06);
+}
+
+.fg-cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.fg-cart-table th,
+.fg-cart-table td {
+  padding: 0.65rem 0.4rem;
+  text-align: left;
+}
+
+.fg-cart-table thead th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--frost-grey);
+  border-bottom: 1px solid rgba(148,163,184,0.3);
+}
+
+.fg-cart-table tbody tr + tr {
+  border-top: 1px solid rgba(226,232,240,0.9);
+}
+
+.fg-cart-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fg-cart-item-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.fg-cart-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fg-cart-item-name {
+  font-weight: 600;
+  color: var(--deep-navy);
+}
+
+.fg-cart-price,
+.fg-cart-line-total {
+  white-space: nowrap;
+}
+
+.fg-cart-qty input {
+  width: 70px;
+  padding: 0.25rem 0.4rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.8);
+  font-size: 0.9rem;
+}
+
+.fg-cart-remove a {
+  text-decoration: none;
+  font-size: 1.3rem;
+  color: #64748b;
+}
+
+.fg-cart-remove a:hover {
+  color: #b91c1c;
+}
+
+/* Actions row under table */
+.fg-cart-actions-row {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fg-btn--outline {
+  background: transparent;
+  border: 1px solid rgba(148,163,184,0.9);
+  color: var(--deep-navy);
+}
+
+.fg-btn--outline:hover {
+  background: rgba(148,163,184,0.1);
+}
+
+.fg-link-danger {
+  font-size: 0.85rem;
+  color: #b91c1c;
+  text-decoration: none;
+}
+
+.fg-link-danger:hover {
+  text-decoration: underline;
+}
+
+/* Summary box */
+.fg-cart-summary {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.4rem 1.2rem 1.6rem;
+  box-shadow: 0 18px 36px rgba(0,0,0,0.06);
+}
+
+.fg-cart-summary h2 {
+  font-size: 1.2rem;
+  color: var(--deep-navy);
+  margin-bottom: 0.8rem;
+}
+
+.fg-cart-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+  color: var(--text-body);
+}
+
+.fg-cart-summary-row--total {
+  font-weight: 700;
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(226,232,240,0.9);
+  color: var(--deep-navy);
+}
+
+.fg-cart-summary-note {
+  font-size: 0.8rem;
+  color: var(--frost-grey);
+  margin: 0.6rem 0 0.8rem;
+}
+
+.fg-btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+.fg-cart-back-link {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: var(--deep-navy);
+}
+
+.fg-cart-back-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .fg-cart-main__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .fg-cart-table thead {
+    display: none;
+  }
+  .fg-cart-table tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.2rem;
+    padding: 0.7rem 0;
+  }
+  .fg-cart-table td:nth-child(2),
+  .fg-cart-table td:nth-child(3),
+  .fg-cart-table td:nth-child(4),
+  .fg-cart-table td:nth-child(5) {
+    font-size: 0.85rem;
+  }
+}
+
+/* -------------------------------------------------------------------------------------------------------------------------------------- */

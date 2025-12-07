@@ -24,17 +24,17 @@ if (!empty($_SESSION['user_id'])) {
 ?>
 
 <header class="fg-header">
+    <!-- Top welcome banner only when logged in -->
     <?php if ($user_name): ?>
         <div class="fg-welcome-banner">
-            <span>Welcome, <?php echo htmlspecialchars($user_name); ?></span>
+            Welcome, <?php echo htmlspecialchars($user_name); ?>
         </div>
     <?php endif; ?>
 
     <div class="fg-header__inner">
+
         <a href="index.php" class="fg-logo">
-            <img src="assets/images/FrostGear.png"
-                 alt="FrostGear logo"
-                 class="fg-logo__img">
+            <img src="assets/images/FrostGear.png" class="fg-logo__img" alt="FrostGear logo">
             <span class="fg-logo__text">FrostGear</span>
         </a>
 
@@ -44,9 +44,10 @@ if (!empty($_SESSION['user_id'])) {
             <a href="about.php" class="fg-nav__link">About</a>
             <a href="contact.php" class="fg-nav__link">Contact</a>
 
+            <!-- ONLY ONE LOGIN / LOGOUT HERE -->
             <?php if ($user_name): ?>
                 <a href="logout.php"
-                   class="fg-nav__link"
+                   class="fg-nav__link fg-logout"
                    onclick="return confirm('Are you sure you want to log out of FrostGear?');">
                    Logout
                 </a>
@@ -54,16 +55,13 @@ if (!empty($_SESSION['user_id'])) {
                 <a href="login.php" class="fg-nav__link">Login</a>
             <?php endif; ?>
 
-            <button id="cartToggle"
-                    class="fg-cart-btn"
-                    type="button"
-                    aria-label="View cart">
-                🛒
-            </button>
+            <!-- Cart -->
+           <a href="cart.php" id="cartToggle" class="fg-cart-btn" aria-label="View cart"> 🛒 </a>
         </nav>
     </div>
 </header>
 
+<!-- CART PANEL -->
 <div class="fg-cart-panel" id="cartPanel">
     <div class="fg-cart-header">
         <h2>Your Cart</h2>
@@ -73,4 +71,5 @@ if (!empty($_SESSION['user_id'])) {
         <p>Your cart is currently empty.</p>
     </div>
 </div>
+
 <div class="fg-cart-overlay" id="cartOverlay"></div>

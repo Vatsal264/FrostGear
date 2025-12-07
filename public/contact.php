@@ -24,6 +24,7 @@ session_start();
             <span>&raquo;</span>
             <span>Contact</span>
         </nav>
+
         <h1>Contact FrostGear</h1>
         <p>
             Questions about gear, sizing, or orders? Send us a message and we’ll get back to you as soon as possible.
@@ -43,7 +44,7 @@ session_start();
                 For urgent inquiries, use the contact details below.
             </p>
 
-            <!-- (static form for now – no backend processing yet) -->
+            <!-- FORM UI ONLY (not functional yet) -->
             <form action="#" method="post" class="fg-form">
                 <div class="fg-form__row">
                     <div class="fg-form__field">
@@ -84,31 +85,36 @@ session_start();
                 </button>
 
                 <p class="fg-contact-note">
-                    Form submission and email handling will be added in the next phase of FrostGear.
+                    Message submission will be enabled in the next update.
                 </p>
             </form>
 
-            <!-- quick contact info -->
+            <!-- CONTACT INFO (clean version) -->
             <div class="fg-contact-info">
-                <div>
-                    <i class="fa-solid fa-envelope"></i>
-                    <span>support@frostgear.example</span>
-                </div>
-                <div>
-                    <i class="fa-solid fa-phone"></i>
-                    <span>+91-00000-00000</span>
-                </div>
-                <div>
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>Alpine Ridge, Mountain View, Earth</span>
+                <div class="info-card">
+                    <h3>Get in Touch</h3>
+                    <p>You can reach our team directly using the details below:</p>
+
+                    <p><strong>Email:</strong> 
+                        <a href="mailto:support@frostgear.com">support@frostgear.com</a>
+                    </p>
+
+                    <p><strong>Phone:</strong> 
+                        <a href="tel:+910000000000">+91 00000 00000</a>
+                    </p>
+
+                    <p><strong>Address:</strong><br>
+                        FrostGear HQ, Alpine Avenue,<br>
+                        Glacier Park Road, India
+                    </p>
                 </div>
             </div>
         </section>
 
-        <!-- RIGHT: IMAGE / VISUAL -->
+        <!-- RIGHT: IMAGE PANEL -->
         <section class="fg-contact-visual">
             <div class="fg-contact-visual__card">
-                <img src="assets/images/"
+                <img src="assets/images/Contact-us.png"
                      alt="FrostGear support in alpine environment">
                 <div class="fg-contact-visual__overlay">
                     <h3>Here to Help</h3>

@@ -2,6 +2,15 @@
 session_start();
 require_once __DIR__ . "/includes/db.php";
 
+$isLoggedIn = isset($_SESSION['user_id']);
+
+$cartError = "";
+
+if (isset($_SESSION['cart_error'])) {
+    $cartError = $_SESSION['cart_error'];
+    unset($_SESSION['cart_error']);
+}
+
 // Get product ID from URL
 $productId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
@@ -76,6 +85,12 @@ function e(string $text): string {
 <body>
 
 <?php include __DIR__ . "/includes/header.php"; ?>
+<?php if (!empty($cartError)): ?>
+    <div class="fg-global-alert">
+        <?php echo htmlspecialchars($cartError); ?>
+    </div>
+<?php endif; ?>
+
 
 <?php if (!$product): ?>
     <section class="fg-product-notfound">
@@ -157,27 +172,39 @@ function e(string $text): string {
                     </span>
                 </div>
 
-                <div class="fg-product-actions">
-                    <div class="fg-qty">
-                        <label for="qty">Qty</label>
-                        <input
-                            type="number"
-                            id="qty"
-                            name="qty"
-                            min="1"
-                            value="1"
-                        >
-                    </div>
+               <div class="fg-product-actions">
+                    <?php if ($isLoggedIn): ?>
+                        <!-- Logged-in: real add-to-cart form -->
+                        <form action="cart.php" method="post" class="fg-product-actions__form">
+                            <input type="hidden" name="action" value="add">
+                            <input type="hidden" name="product_id" value="<?php echo (int)$product['id']; ?>">
 
-                    <button class="fg-btn fg-btn--gold fg-btn--product" type="button" disabled>
-                        Add to Cart (Coming Soon)
-                    </button>
+                            <div class="fg-qty">
+                                <label for="qty">Qty</label>
+                                <input type="number" id="qty" name="qty" min="1" value="1">
+                            </div>
 
-                    <p class="fg-product-actions__note">
-                        Cart and checkout functionality will be added in the next phase of FrostGear.
-                    </p>
-                </div> 
+                            <button type="submit" class="fg-btn fg-btn--gold fg-btn--product">
+                                Add to Cart
+                            </button>
+                        </form>
 
+                        <p class="fg-product-actions__note">
+                            Cart and checkout are in early access. Quantities and pricing are for demo purposes.
+                        </p>
+
+                    <?php else: ?>
+                        <!-- Not logged-in: show login CTA instead of cart form -->
+                        <a href="login.php?redirect=<?php echo urlencode('product.php?id=' . (int)$product['id']); ?>"
+                        class="fg-btn fg-btn--gold fg-btn--product">
+                            Login to Add to Cart
+                        </a>
+
+                        <p class="fg-product-actions__note">
+                            Please sign in to save items to your FrostGear cart.
+                        </p>
+                    <?php endif; ?>
+                </div>
 
                 <div class="fg-product-description">
                     <h2>Product Description</h2>
