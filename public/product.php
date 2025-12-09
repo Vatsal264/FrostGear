@@ -179,6 +179,10 @@ function e(string $text): string {
                             <input type="hidden" name="action" value="add">
                             <input type="hidden" name="product_id" value="<?php echo (int)$product['id']; ?>">
 
+                            <!-- NEW: tell cart.php to send user back here -->
+                            <input type="hidden" name="redirect"
+                                value="product.php?id=<?php echo (int)$product['id']; ?>">
+
                             <div class="fg-qty">
                                 <label for="qty">Qty</label>
                                 <input type="number" id="qty" name="qty" min="1" value="1">

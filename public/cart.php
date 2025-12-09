@@ -2,34 +2,33 @@
 session_start();
 require_once __DIR__ . "/includes/db.php";
 
-$isLoggedIn = isset($_SESSION['user_id']);
-
-// Ensure cart array exists
-if (!isset($_SESSION['cart'])) {
+/* ==========================================
+   INITIALIZE CART
+========================================== */
+if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 $cart =& $_SESSION['cart'];
 
 $errors = [];
 
-// ---------- HANDLE ACTIONS ----------
-$isLoggedIn = isset($_SESSION['user_id']);
-
+/* ==========================================
+   HANDLE POST REQUESTS
+========================================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    /* =================== ADD ITEM TO CART ==========================*/
+    /* ---------- ADD ITEM (from product page) ---------- */
     if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
-        // Require login
-        if (!$isLoggedIn) {
+        // Block if user not logged in
+        if (!isset($_SESSION['user_id'])) {
             $_SESSION['cart_error'] = "Please log in to add items to your cart.";
-            header("Location: " . $_SERVER['HTTP_REFERER']);
+            header("Location: " . ($_POST['redirect'] ?? "product.php"));
             exit;
         }
 
-
-        $productId = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
-        $qty       = isset($_POST['qty']) ? (int)$_POST['qty'] : 1;
+        $productId = (int)($_POST['product_id'] ?? 0);
+        $qty       = (int)($_POST['qty'] ?? 1);
         if ($qty < 1) $qty = 1;
 
         // Fetch product from DB
@@ -43,19 +42,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
 
         if ($result && $product = $result->fetch_assoc()) {
-
             $maxQty = (int)$product['stock'];
+
+            // Cap qty by stock
             if ($maxQty > 0 && $qty > $maxQty) {
                 $qty = $maxQty;
             }
 
+            // If item exists, add qty
             if (isset($cart[$productId])) {
                 $newQty = $cart[$productId]['qty'] + $qty;
                 if ($maxQty > 0 && $newQty > $maxQty) {
                     $newQty = $maxQty;
                 }
                 $cart[$productId]['qty'] = $newQty;
+
             } else {
+                // Add new item
                 $cart[$productId] = [
                     'id'    => $product['id'],
                     'name'  => $product['name'],
@@ -66,28 +69,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
         } else {
-            $errors[] = "Product not found or inactive.";
+            $errors[] = "Product not found.";
         }
 
-        header("Location: cart.php");
-        exit;
-    }
-
-
-    /* ================================
-       UPDATE CART QUANTITIES
-    =================================*/
-    if (isset($_POST['action']) && $_POST['action'] === 'update') {
-
-        // Require login
-        if (!$isLoggedIn) {
-            $_SESSION['flash_error'] = "Please log in to update your cart.";
-            header("Location: login.php");
+        // DO NOT REDIRECT FORCEFULLY TO CART — user stays on product page
+        if (!empty($_POST['redirect'])) {
+            header("Location: " . $_POST['redirect']);
             exit;
         }
 
-        if (isset($_POST['qty']) && is_array($_POST['qty'])) {
+        header("Location: product.php?id=" . $productId);
+        exit;
+    }
 
+    /* ---------- UPDATE QTY (Auto-submit from JS) ---------- */
+    if (isset($_POST['action']) && $_POST['action'] === 'update') {
+
+        if (isset($_POST['qty']) && is_array($_POST['qty'])) {
             foreach ($_POST['qty'] as $pid => $qtyRaw) {
                 $pid = (int)$pid;
                 $qty = (int)$qtyRaw;
@@ -97,19 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($qty <= 0) {
                     unset($cart[$pid]);
                 } else {
-                    // Check stock
+                    // Validate stock from DB
                     $stmt = $conn->prepare("SELECT stock FROM products WHERE id = ?");
                     $stmt->bind_param("i", $pid);
                     $stmt->execute();
-                    $result = $stmt->get_result();
+                    $res = $stmt->get_result();
+                    $max = $res && $r = $res->fetch_assoc() ? (int)$r['stock'] : 0;
 
-                    $maxQty = 0;
-                    if ($result && $row = $result->fetch_assoc()) {
-                        $maxQty = (int)$row['stock'];
-                    }
-
-                    if ($maxQty > 0 && $qty > $maxQty) {
-                        $qty = $maxQty;
+                    if ($max > 0 && $qty > $max) {
+                        $qty = $max;
                     }
 
                     $cart[$pid]['qty'] = $qty;
@@ -122,12 +116,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ---------- CALCULATE TOTALS ----------
+/* ==========================================
+   HANDLE GET REQUESTS
+========================================== */
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+    /* ---------- REMOVE SINGLE ITEM ---------- */
+    if (isset($_GET['action']) && $_GET['action'] === 'remove') {
+        $pid = (int)($_GET['id'] ?? 0);
+        if (isset($cart[$pid])) unset($cart[$pid]);
+        header("Location: cart.php");
+        exit;
+    }
+
+    /* ---------- CLEAR CART ---------- */
+    if (isset($_GET['action']) && $_GET['action'] === 'clear') {
+        $_SESSION['cart'] = [];
+        header("Location: cart.php");
+        exit;
+    }
+}
+
+/* ==========================================
+   CALCULATE TOTALS
+========================================== */
 $subtotal = 0;
 foreach ($cart as $item) {
     $subtotal += $item['price'] * $item['qty'];
 }
-$grandTotal = $subtotal; // later you can add shipping, tax, etc.
+$grandTotal = $subtotal;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -149,9 +167,7 @@ $grandTotal = $subtotal; // later you can add shipping, tax, etc.
             <span>Cart</span>
         </nav>
         <h1>Your Cart</h1>
-        <p>
-            Review your selected FrostGear items before proceeding to checkout.
-        </p>
+        <p>Review your FrostGear items before checkout.</p>
     </div>
 </section>
 
@@ -161,21 +177,25 @@ $grandTotal = $subtotal; // later you can add shipping, tax, etc.
         <?php if (!empty($errors)): ?>
             <div class="fg-cart-alert">
                 <?php foreach ($errors as $e): ?>
-                    <p><?php echo htmlspecialchars($e); ?></p>
+                    <p><?= htmlspecialchars($e) ?></p>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
 
         <?php if (empty($cart)): ?>
+
+            <!-- EMPTY CART UI -->
             <div class="fg-cart-empty">
                 <h2>Your cart is empty</h2>
-                <p>Browse our latest skis, boots, and gear to start building your kit.</p>
+                <p>Browse our premium ski gear to get started.</p>
                 <a href="shop.php" class="fg-btn fg-btn--gold">Continue Shopping</a>
             </div>
+
         <?php else: ?>
 
+            <!-- ======================= CART ITEMS TABLE ======================= -->
             <section class="fg-cart-items-box">
-                <form action="cart.php" method="post">
+                <form action="cart.php" method="post" id="fgCartForm">
                     <input type="hidden" name="action" value="update">
 
                     <table class="fg-cart-table">
@@ -188,81 +208,95 @@ $grandTotal = $subtotal; // later you can add shipping, tax, etc.
                             <th></th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <?php foreach ($cart as $item): ?>
-                            <tr>
+                            <tr class="fg-cart-row"
+                                data-id="<?= (int)$item['id'] ?>"
+                                data-price="<?= htmlspecialchars($item['price']) ?>">
+
                                 <td class="fg-cart-item-info">
                                     <div class="fg-cart-item-thumb">
-                                        <img src="assets/images/products/<?php echo htmlspecialchars($item['image']); ?>"
-                                             alt="<?php echo htmlspecialchars($item['name']); ?>">
+                                        <img src="assets/images/products/<?= htmlspecialchars($item['image']) ?>"
+                                             alt="<?= htmlspecialchars($item['name']) ?>">
                                     </div>
-                                    <div>
-                                        <div class="fg-cart-item-name">
-                                            <?php echo htmlspecialchars($item['name']); ?>
-                                        </div>
+                                    <div class="fg-cart-item-name">
+                                        <?= htmlspecialchars($item['name']) ?>
                                     </div>
                                 </td>
+
                                 <td class="fg-cart-price">
-                                    Rs.<?php echo number_format($item['price'], 0); ?>
+                                    Rs.<?= number_format($item['price'], 0) ?>
                                 </td>
+
                                 <td class="fg-cart-qty">
                                     <input type="number"
-                                           name="qty[<?php echo (int)$item['id']; ?>]"
+                                           class="fg-cart-qty-input"
+                                           name="qty[<?= (int)$item['id'] ?>]"
                                            min="0"
-                                           max="999"
-                                           value="<?php echo (int)$item['qty']; ?>">
+                                           value="<?= (int)$item['qty'] ?>">
                                 </td>
+
                                 <td class="fg-cart-line-total">
-                                    Rs.<?php echo number_format($item['price'] * $item['qty'], 0); ?>
+                                    <span class="fg-cart-line-total-value">
+                                        Rs.<?= number_format($item['price'] * $item['qty'], 0) ?>
+                                    </span>
                                 </td>
+
                                 <td class="fg-cart-remove">
-                                    <a href="cart.php?action=remove&id=<?php echo (int)$item['id']; ?>"
-                                       onclick="return confirm('Remove this item from your cart?');">
+                                    <a href="cart.php?action=remove&id=<?= (int)$item['id'] ?>"
+                                       class="fg-cart-remove-link"
+                                       aria-label="Remove">
                                         &times;
                                     </a>
                                 </td>
+
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
                     </table>
 
                     <div class="fg-cart-actions-row">
-                        <button type="submit" class="fg-btn fg-btn--outline">
-                            Update Cart
-                        </button>
                         <a href="cart.php?action=clear"
-                           class="fg-link-danger"
-                           onclick="return confirm('Clear all items from your cart?');">
+                           class="fg-link-danger">
                             Clear Cart
                         </a>
                     </div>
                 </form>
             </section>
 
+            <!-- ======================= ORDER SUMMARY ======================= -->
             <aside class="fg-cart-summary">
                 <h2>Order Summary</h2>
+
                 <div class="fg-cart-summary-row">
                     <span>Subtotal</span>
-                    <span>Rs.<?php echo number_format($subtotal, 0); ?></span>
+                    <span id="fgCartSubtotal">Rs.<?= number_format($subtotal, 0) ?></span>
                 </div>
+
                 <div class="fg-cart-summary-row fg-cart-summary-row--total">
                     <span>Total</span>
-                    <span>Rs.<?php echo number_format($grandTotal, 0); ?></span>
+                    <span id="fgCartTotal">Rs.<?= number_format($grandTotal, 0) ?></span>
                 </div>
+
                 <p class="fg-cart-summary-note">
-                    Checkout and payment will be added in the next phase of FrostGear.
+                    Checkout system coming soon.
                 </p>
+
                 <button class="fg-btn fg-btn--gold fg-btn--full" disabled>
-                    Proceed to Checkout (Coming Soon)
+                    Proceed to Checkout
                 </button>
+
                 <a href="shop.php" class="fg-cart-back-link">Continue Shopping</a>
             </aside>
 
         <?php endif; ?>
+
     </div>
 </main>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>
 
+<script src="assets/js/cart.js"></script>
 </body>
 </html>

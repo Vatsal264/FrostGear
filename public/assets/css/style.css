@@ -2169,11 +2169,9 @@ a:hover {
 
 /* Actions row under table */
 .fg-cart-actions-row {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .fg-btn--outline {
@@ -2187,13 +2185,13 @@ a:hover {
 }
 
 .fg-link-danger {
-  font-size: 0.85rem;
-  color: #b91c1c;
-  text-decoration: none;
+    color: #b91c1c;
+    font-weight: 600;
+    text-decoration: none;
 }
 
 .fg-link-danger:hover {
-  text-decoration: underline;
+    color: #dc2626;
 }
 
 /* Summary box */
@@ -2248,6 +2246,53 @@ a:hover {
 .fg-cart-back-link:hover {
   text-decoration: underline;
 }
+
+/* Cart button + badge in header */
+.fg-cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.fg-cart-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.fg-cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #e11d48; /* pink-red */
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fg-cart-row {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fg-cart-row--removing {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
 
 /* Responsive */
 @media (max-width: 900px) {

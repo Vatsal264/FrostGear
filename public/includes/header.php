@@ -3,6 +3,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+$cartCount = 0;
+if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $ci) {
+        $cartCount += isset($ci['qty']) ? (int)$ci['qty'] : 0;
+    }
+}
+
 $user_name = null;
 
 if (!empty($_SESSION['user_id'])) {
@@ -56,7 +63,11 @@ if (!empty($_SESSION['user_id'])) {
             <?php endif; ?>
 
             <!-- Cart -->
-           <a href="cart.php" id="cartToggle" class="fg-cart-btn" aria-label="View cart"> 🛒 </a>
+            <a href="cart.php" class="fg-cart-btn" aria-label="View cart"> 🛒 
+                <?php if ($cartCount > 0): ?>
+                    <span class="fg-cart-count"><?php echo $cartCount; ?></span>
+                <?php endif; ?>
+            </a>
         </nav>
     </div>
 </header>
