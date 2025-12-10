@@ -136,7 +136,7 @@ FrostGear/
         
 ---
 
-🧱 Database Overview (Current)
+## 🧱 Database Overview (Current)
 
 Database: frostgear_db
 Key tables so far:
@@ -167,7 +167,9 @@ created_at
 
 Note: orders and order_items tables are planned for the next phase when checkout is implemented.
 
-⚙️ Installation & Setup
+---
+
+## ⚙️ Installation & Setup
 1. Clone the Repository
 git clone https://github.com/<your-username>/FrostGear.git
 
@@ -194,9 +196,9 @@ Create a new database:
 CREATE DATABASE frostgear_db;
 
 Import or create tables:
-users
-categories
-products
+users,
+categories,
+products,
 (Use your prepared SQL files for schema & sample data.)
 
 Update public/includes/db.php with your DB credentials:
@@ -212,7 +214,9 @@ Visit:
 
 http://localhost/FrostGear/public/index.php
 
-🧭 Roadmap (Next Milestones)
+---
+
+## 🧭 Roadmap (Next Milestones)
 
 Planned features to extend FrostGear:
 
@@ -246,9 +250,11 @@ Admin Panel (Basic):
 
 View orders
 
-Update order status
+Update order 
 
-⭐ Nice to Have (Future)
+---
+
+## ⭐ Nice to Have (Future)
 
 Wishlist / Save for Later
 
