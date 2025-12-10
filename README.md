@@ -262,7 +262,9 @@ Product reviews
 
 Search with filters (price, category, sale)
 
-📄 License
+---
+
+## 📄 License
 
 This project is built as a learning / portfolio project.
 You can adapt the code for personal or educational use.
