@@ -11,7 +11,6 @@ This project is part of a personal portfolio initiative and demonstrates skills 
 
 ---
 
-
 ## 🚀 Features (Current Milestones)
 
 ### 🏠 Public Pages
@@ -109,7 +108,6 @@ This project is part of a personal portfolio initiative and demonstrates skills 
 
 ## 📁 Project Structure
 
-```bash
 FrostGear/
 └── public/
     ├── index.php          # Home page
@@ -135,3 +133,132 @@ FrostGear/
         ├── header.php     # Global header + nav + cart badge
         ├── footer.php     # Global footer
         └── db.php         # Database connection
+        
+---
+
+🧱 Database Overview (Current)
+
+Database: frostgear_db
+Key tables so far:
+
+users
+
+id, name, email, password_hash, created_at
+
+categories
+
+id, name, slug, created_at
+
+products
+
+id, name, description
+
+price, old_price (for sale)
+
+stock
+
+category_id → categories.id
+
+main_image
+
+is_on_sale, is_active
+
+created_at
+
+Note: orders and order_items tables are planned for the next phase when checkout is implemented.
+
+⚙️ Installation & Setup
+1. Clone the Repository
+git clone https://github.com/<your-username>/FrostGear.git
+
+2. Move Project into XAMPP
+
+Place the project inside your XAMPP htdocs directory:
+
+C:/xampp/htdocs/FrostGear/
+
+3. Start Apache & MySQL
+
+Open XAMPP Control Panel
+
+Start Apache
+
+Start MySQL
+
+4. Create Database
+
+Open phpMyAdmin (usually at http://localhost/phpmyadmin).
+
+Create a new database:
+
+CREATE DATABASE frostgear_db;
+
+Import or create tables:
+users
+categories
+products
+(Use your prepared SQL files for schema & sample data.)
+
+Update public/includes/db.php with your DB credentials:
+
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "frostgear_db";
+
+5. Run FrostGear
+
+Visit:
+
+http://localhost/FrostGear/public/index.php
+
+🧭 Roadmap (Next Milestones)
+
+Planned features to extend FrostGear:
+
+✅ Done
+
+Home, Shop, Product pages
+
+Authentication (Register/Login/Logout)
+
+Session-based Cart with live totals
+
+About & Contact pages
+
+🔜 Next
+
+Checkout Page:
+
+Shipping details form
+
+Order summary
+
+Persist orders to DB
+
+Orders & My Orders Page:
+
+Store orders and order_items
+
+Logged-in users can view their order history
+
+Admin Panel (Basic):
+
+View orders
+
+Update order status
+
+⭐ Nice to Have (Future)
+
+Wishlist / Save for Later
+
+Product reviews
+
+Search with filters (price, category, sale)
+
+📄 License
+
+This project is built as a learning / portfolio project.
+You can adapt the code for personal or educational use.
+
+If you have suggestions or want to review the code, feel free to open an issue or PR on the GitHub repo.
