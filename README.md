@@ -256,9 +256,9 @@ Update order
 
 ## ⭐ Nice to Have (Future)
 
-Wishlist / Save for Later
+Wishlist / Save for Later.
 
-Product reviews
+Product reviews.
 
 Search with filters (price, category, sale)
 
